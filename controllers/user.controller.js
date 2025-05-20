@@ -37,4 +37,30 @@ const signup = async (req, res) => {
 }
 
 
-export {signup}
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body
+
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.status(400).json({ message: "Email is not registered" })
+        }
+
+        const comparePassword = await bcrypt.compare(password, user.password)
+        if (!comparePassword) {
+            return res.status(400).json({ message: "Password is incorrect" })
+        }
+
+        createTokenAndSaveCookie(user._id, res)
+        const { password: pwd, ...userWithoutPassword } = user.toObject()
+        
+        res.status(200).json({
+            message: "User logged in successfully",
+            user: userWithoutPassword,
+        });
+    } catch (error) {
+        res.status(500).send(`Error in login: something went wrong`);
+    }
+}
+
+export { signup, login }
