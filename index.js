@@ -6,6 +6,7 @@ import cors from 'cors'
 
 import { db } from './db.js';
 import userRoute from './routes/user.route.js'
+import productRoute from './routes/product.route.js'
 
 dotenv.config();
 
@@ -22,13 +23,7 @@ app.use(cookieParser());
 
 
 app.use('/user',userRoute)
-
-
-
-
-
-
-
+app.use('/product',productRoute)
 
 
 

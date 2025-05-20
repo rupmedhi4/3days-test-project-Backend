@@ -71,4 +71,6 @@ const logout = async (req, res) => {
         res.status(401).json({ success: false });
     }
 }
+
+
 export { signup, login,logout }
