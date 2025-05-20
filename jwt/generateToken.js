@@ -6,7 +6,7 @@ const createTokenAndSaveCookie = (id, res) => {
           expiresIn: '14d',
     })
 
-    res.cookie("token", token, {
+    res.cookie("jwt", token, {
         httpOnly: true,
         secure: false,
         sameSite: "Lax",

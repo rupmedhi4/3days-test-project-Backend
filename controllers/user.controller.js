@@ -65,7 +65,11 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("jwt", {
+            httpOnly: true,
+            sameSite: "Lax",
+            secure: false,
+        });
         res.status(200).json({ success: true });
     } catch (error) {
         res.status(401).json({ success: false });
@@ -73,4 +77,4 @@ const logout = async (req, res) => {
 }
 
 
-export { signup, login,logout }
+export { signup, login, logout }
