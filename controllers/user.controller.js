@@ -53,7 +53,7 @@ const login = async (req, res) => {
 
         createTokenAndSaveCookie(user._id, res)
         const { password: pwd, ...userWithoutPassword } = user.toObject()
-        
+
         res.status(200).json({
             message: "User logged in successfully",
             user: userWithoutPassword,
@@ -63,4 +63,12 @@ const login = async (req, res) => {
     }
 }
 
-export { signup, login }
+const logout = async (req, res) => {
+    try {
+        res.clearCookie("token");
+        res.status(200).json({ success: true });
+    } catch (error) {
+        res.status(401).json({ success: false });
+    }
+}
+export { signup, login,logout }
