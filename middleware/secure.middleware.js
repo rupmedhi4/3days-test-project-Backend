@@ -14,6 +14,7 @@ const isAuthMiddleware = (req, res, next) => {
         }
 
         req.user = decoded;
+        
 
         next();
 
