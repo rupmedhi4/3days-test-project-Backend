@@ -1,5 +1,5 @@
-import Product from '../model/product.model.js'
-import User from '../model/user.model.js'
+import Product from '../../model/adminModel/product.model.js'
+import User from '../../model/adminModel/user.model.js'
 
 const createProduct = async (req, res) => {
     try {
@@ -95,5 +95,16 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const getProduct = async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
 
-export { createProduct, updateProduct,deleteProduct }
+
+
+export { createProduct, updateProduct,deleteProduct,getProduct }

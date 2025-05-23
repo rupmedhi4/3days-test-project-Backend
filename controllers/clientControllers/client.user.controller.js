@@ -1,20 +1,20 @@
-import { createTokenAndSaveCookie } from '../jwt/generateToken.js'
-import User from '../model/user.model.js'
-import bcrypt from 'bcryptjs'
+import { createTokenAndSaveCookie } from "../../jwt/generateToken.js"
+import ClientUser from "../../model/clientModel/client.user.model.js"
+import bcrypt from "bcryptjs"
 
 
 const signup = async (req, res) => {
     try {
         const { name, email, password } = req.body
 
-        const isEmail = await User.findOne({ email })
+        const isEmail = await ClientUser.findOne({ email })
 
         if (isEmail) {
             return res.status(400).json({ message: 'Email is already in use' })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = new User({
+        const newUser = new ClientUser({
             name,
             email,
             password: hashedPassword
@@ -41,7 +41,7 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body
 
-        const user = await User.findOne({ email })
+        const user = await ClientUser.findOne({ email })
         if (!user) {
             return res.status(400).json({ message: "Email is not registered" })
         }

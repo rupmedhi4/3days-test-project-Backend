@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import Order from '../clientModel/client.order.model.js'
 
 const userSchema = mongoose.Schema({
     name:{
@@ -12,7 +13,11 @@ const userSchema = mongoose.Schema({
     password:{
         type:String,
         require:true
-    }
+    },
+    placedOrderItems:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order'  
+    }]
 })
 
 const User = mongoose.model("User",userSchema)

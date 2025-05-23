@@ -5,8 +5,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 
 import { db } from './db.js';
-import userRoute from './routes/user.route.js'
-import productRoute from './routes/product.route.js'
+//admin route
+import userRoute from './routes/adminRoute/user.route.js'
+import productRoute from './routes/adminRoute/product.route.js'
+
+
+//client route
+import clientUserRoute from './routes/clientRoutes/client.user.route.js'
+import orderRoute from './routes/clientRoutes/client.order.route.js'
 
 dotenv.config();
 
@@ -21,11 +27,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-
-app.use('/user',userRoute)
+//Admin Route
+app.use('/auth/user',userRoute)
 app.use('/product',productRoute)
 
 
+// Client Route
+app.use('/auth/client',clientUserRoute)
+app.use('/client/order',orderRoute)
 
 
 
