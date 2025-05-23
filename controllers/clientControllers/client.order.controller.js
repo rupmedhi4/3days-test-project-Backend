@@ -6,7 +6,7 @@ import Product from "../../model/adminModel/product.model.js";
 const placedOrder = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { sellerId } = req.body;
+    const { sellerId,orderedQuantity } = req.body;
     const clientId = req.user.id;
     console.log(req.user.id);
 
@@ -18,7 +18,9 @@ const placedOrder = async (req, res) => {
 
     const order = new Order({
       productId,
-      status: 'pending'
+      status: 'pending',
+      orderedQuantity,
+      sellerId
     });
 
     await order.save();
@@ -71,6 +73,64 @@ const getOrder = async (req, res) => {
   }
 };
 
+const sellerGetOrder = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const user = await User.findById(id).populate({
+      path: 'placedOrderItems',
+      populate: {
+        path: 'productId',
+        model: 'Product'
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.placedOrderItems); 
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+const orderUpdate = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { status } = req.body;
+
+    const allowedStatus = ["pending", "shipped", "delivered", "cancelled"];
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (order.sellerId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized to update this order" });
+    }
+
+    order.status = status;
+    await order.save();
+
+    res.status(200).json({
+      message: "Order updated successfully",
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating order:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
-export { placedOrder, getOrder };
+
+
+export { placedOrder, getOrder,sellerGetOrder,orderUpdate };
+
+
+
