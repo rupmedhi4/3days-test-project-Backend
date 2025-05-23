@@ -35,6 +35,7 @@ app.use('/product',productRoute)
 // Client Route
 app.use('/auth/client',clientUserRoute)
 app.use('/client/order',orderRoute)
+app.use('/client/address',orderRoute)
 
 
 

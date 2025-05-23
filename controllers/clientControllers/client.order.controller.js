@@ -6,34 +6,36 @@ import Product from "../../model/adminModel/product.model.js";
 const placedOrder = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { sellerId,orderedQuantity } = req.body;
+    const { sellerId, orderedQuantity } = req.body;
     const clientId = req.user.id;
-    console.log(req.user.id);
-
-
 
     if (!sellerId) {
       return res.status(400).json({ error: "sellerId is required" });
+    }
+
+    const sellerUser = await User.findById(sellerId);
+    const clientUser = await ClientUser.findById(clientId);
+
+    if (!sellerUser) {
+      return res.status(404).json({ error: "Seller not found" });
+    }
+    if (!clientUser) {
+      return res.status(404).json({ error: "Client user not found" });
+    }
+
+    if (!clientUser.address) {
+      return res.status(400).json({ error: "Client address is missing" });
     }
 
     const order = new Order({
       productId,
       status: 'pending',
       orderedQuantity,
-      sellerId
+      sellerId,
+      address: clientUser.address
     });
 
     await order.save();
-
-    const sellerUser = await User.findById(sellerId);
-    if (!sellerUser) {
-      return res.status(404).json({ error: "Seller not found" });
-    }
-
-    const clientUser = await ClientUser.findById(clientId);
-    if (!clientUser) {
-      return res.status(404).json({ error: "Client user not found" });
-    }
 
     sellerUser.placedOrderItems.push(order._id);
     clientUser.placedOrderItems.push(order._id);
@@ -66,7 +68,7 @@ const getOrder = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.placedOrderItems); 
+    res.status(200).json(user.placedOrderItems);
   } catch (err) {
     console.error("Error fetching orders:", err);
     res.status(500).json({ message: "Something went wrong" });
@@ -88,7 +90,7 @@ const sellerGetOrder = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.placedOrderItems); 
+    res.status(200).json(user.placedOrderItems);
   } catch (err) {
     console.error("Error fetching orders:", err);
     res.status(500).json({ message: "Something went wrong" });
@@ -127,10 +129,48 @@ const orderUpdate = async (req, res) => {
   }
 };
 
+const addAddress = async (req, res) => {
+  try {
+    const {
+      street,
+      city,
+      state,
+      country,
+      pincode
+    } = req.body;
+
+    const id = req.user.id;
+
+    const user = await ClientUser.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (!street || !city || !state || !country || !pincode) {
+      return res.status(400).json({ message: "All address fields are required" });
+    }
+
+
+    user.address = {
+      street,
+      city,
+      state,
+      country,
+      pincode
+    };
+
+    await user.save();
+
+    res.status(200).json({ message: "Address added successfully", user });
+  } catch (error) {
+    console.error("Error adding address:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 
-export { placedOrder, getOrder,sellerGetOrder,orderUpdate };
+export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress };
 
 
 
