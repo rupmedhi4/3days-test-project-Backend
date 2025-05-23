@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
-import Order from './client.order.model.js';
+import Product from '../adminModel/product.model.js';
+import Order from '../clientModel/client.order.model.js'
 
 const clientUserSchema = mongoose.Schema({
     name: {
@@ -21,6 +22,10 @@ const clientUserSchema = mongoose.Schema({
         country: { type: String },
         pincode: { type: String }
     },
+    addToCart: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }],
     placedOrderItems: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Order'

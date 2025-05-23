@@ -168,9 +168,56 @@ const addAddress = async (req, res) => {
   }
 };
 
+const addToCart = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const productId = req.params.id;
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const user = await ClientUser.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
 
-export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress };
+    if (user.addToCart.includes(productId)) {
+      return res.status(400).json({ message: "Product already in cart" });
+    }
+    
+    user.addToCart.push(productId);
+    await user.save();
+
+    res.status(200).json({ message: "Product added to cart", user });
+  } catch (error) {
+    console.error("Error adding product to cart:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getAddToCart = async (req, res) => {
+  try {
+    const id = req.user.id;
+    const user = await ClientUser.findById(id).populate("addToCart");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const data = user.addToCart; 
+    res.status(200).json({ message: "Cart data", data });
+  } catch (error) {
+    console.error("Error getting cart data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress,addToCart,getAddToCart };
 
 
 
