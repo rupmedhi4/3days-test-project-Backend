@@ -216,8 +216,35 @@ const getAddToCart = async (req, res) => {
   }
 };
 
+const deleteAddToCartItem = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const userId = req.user.id; 
 
-export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress,addToCart,getAddToCart };
+    const updatedCart = await ClientUser.findByIdAndUpdate(userId,{ 
+        $pull: { addToCart: productId } 
+      }, 
+      { new: true } 
+    );
+
+    if (!updatedCart) {
+      return res.status(404).json({ message: "User not found or unauthorized" });
+    }
+
+    res.status(200).json({
+      message: "Product removed from cart successfully",
+      cart: updatedCart.addToCart
+    });
+
+  } catch (error) {
+    console.error("Error removing product from cart:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress,addToCart,getAddToCart,deleteAddToCartItem };
 
 
 
