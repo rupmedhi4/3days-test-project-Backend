@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 const isAuthMiddleware = (req, res, next) => {
     try {
         const token = req.cookies.jwt || req.headers['authorization']?.split(' ')[1];
+        console.log(token);
+        
         if (!token) {
             return res.status(401).json({ error: "No token, authorization denied" });
         }

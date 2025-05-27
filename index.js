@@ -20,7 +20,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "http://localhost:5173",
     credentials: true,
 }))
 app.use(bodyParser.urlencoded({ extended: true }));

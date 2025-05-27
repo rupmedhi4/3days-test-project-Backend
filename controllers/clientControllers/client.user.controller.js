@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs"
 
 
 const signup = async (req, res) => {
+    
     try {
         const { name, email, password } = req.body
 
@@ -17,11 +18,12 @@ const signup = async (req, res) => {
         const newUser = new ClientUser({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role:"client"
         })
         await newUser.save()
 
-        createTokenAndSaveCookie(newUser._id, res)
+        createTokenAndSaveCookie(newUser, res)
 
         const { password: pwd, ...userWithoutPassword } = newUser.toObject();
 
@@ -51,7 +53,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
-        createTokenAndSaveCookie(user._id, res)
+        createTokenAndSaveCookie(user, res)
         const { password: pwd, ...userWithoutPassword } = user.toObject()
 
         res.status(200).json({

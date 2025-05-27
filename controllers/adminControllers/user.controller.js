@@ -17,11 +17,12 @@ const signup = async (req, res) => {
         const newUser = new User({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role:"admin"
         })
         await newUser.save()
 
-        createTokenAndSaveCookie(newUser._id, res)
+        createTokenAndSaveCookie(newUser, res)
 
         const { password: pwd, ...userWithoutPassword } = newUser.toObject();
 
@@ -32,7 +33,7 @@ const signup = async (req, res) => {
 
     } catch (error) {
         console.error("Signup error:", error.message);
-        res.status(500).json({ message: "Something went wrong during signup" });
+        res.status(500).json({ message: "Something went wrong during signup",error:error });
     }
 }
 
@@ -51,7 +52,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
-        createTokenAndSaveCookie(user._id, res)
+        createTokenAndSaveCookie(user, res)
         const { password: pwd, ...userWithoutPassword } = user.toObject()
 
         res.status(200).json({

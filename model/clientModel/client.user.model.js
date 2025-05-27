@@ -15,6 +15,11 @@ const clientUserSchema = mongoose.Schema({
         type: String,
         require: true
     },
+    role: {
+        type: String,
+        enum: ['client', 'admin'],
+        
+    },
     address: {
         street: { type: String },
         city: { type: String },

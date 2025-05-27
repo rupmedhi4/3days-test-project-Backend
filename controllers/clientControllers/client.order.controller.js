@@ -54,24 +54,38 @@ const placedOrder = async (req, res) => {
 };
 
 const getOrder = async (req, res) => {
-  try {
+   try {
     const id = req.user.id;
-    const user = await ClientUser.findById(id).populate({
-      path: 'placedOrderItems',
-      populate: {
-        path: 'productId',
-        model: 'Product'
-      }
-    });
+
+    let user;
+    if (req.user.role === 'client') {
+      user = await ClientUser.findById(id).populate({
+        path: 'placedOrderItems',
+        populate: {
+          path: 'productId',
+          model: 'Product',
+        },
+      });
+    } else if (req.user.role === 'admin') {
+      user = await User.findById(id).populate({
+        path: 'placedOrderItems',
+        populate: {
+          path: 'productId',
+          model: 'Product',
+        },
+      });
+    } else {
+      return res.status(403).json({ message: 'Unauthorized role' });
+    }
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.status(200).json(user.placedOrderItems);
   } catch (err) {
-    console.error("Error fetching orders:", err);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ message: 'Something went wrong' });
   }
 };
 
@@ -108,6 +122,8 @@ const orderUpdate = async (req, res) => {
     }
 
     const order = await Order.findById(id);
+    console.log(order);
+    
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
