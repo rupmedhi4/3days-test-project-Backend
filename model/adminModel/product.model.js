@@ -31,7 +31,11 @@ const productSchema = mongoose.Schema({
         ref: 'User',
         required: true,
     }
-})
+},
+    {
+        timestamps: true
+    }
+)
 
 const Product = mongoose.model("Product", productSchema)
 
