@@ -44,21 +44,21 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const { name, price, description, image, category, quantity } = req.body;
     const id = req.params.id;
+    const allowedFields = ["name", "price", "description", "image", "category", "quantity"];
+    const updateData = {};
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      {
-        name,
-        price,
-        description,
-        image,
-        category,
-        quantity
-      },
-      { new: true, runValidators: true }
-    );
+    for (let field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
 
     if (!updatedProduct) {
       return res.status(404).json({ message: "Product not found" });
@@ -126,4 +126,4 @@ const getAdminCreateProducts = async (req, res) => {
 }
 
 
-export { createProduct, updateProduct, deleteProduct, getProduct,getAdminCreateProducts }
+export { createProduct, updateProduct, deleteProduct, getProduct, getAdminCreateProducts }
