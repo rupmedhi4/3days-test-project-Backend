@@ -1,5 +1,7 @@
 import Product from '../../model/adminModel/product.model.js'
 import User from '../../model/adminModel/user.model.js'
+import mongoose from 'mongoose';
+
 
 const createProduct = async (req, res) => {
   try {
@@ -44,7 +46,25 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const id = req.params.id;
+    const productId = req.params.id;
+    const userId = req.user.id
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    const product = await Product.findOne({ _id: productId, sellerId: userId });
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found or you are not authorized to update it',
+      });
+    }
+
     const allowedFields = ["name", "price", "description", "image", "category", "quantity"];
     const updateData = {};
 
@@ -53,8 +73,7 @@ const updateProduct = async (req, res) => {
         updateData[field] = req.body[field];
       }
     }
-
-    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, {
+    const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, {
       new: true,
       runValidators: true,
     });
@@ -79,31 +98,93 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// const deleteProduct = async (req, res) => {
+//   try {
+//     const { id:productId } = req.params;
+//     const userId = req.user?._id;
+
+//     if (!mongoose.Types.ObjectId.isValid(productId)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: 'Invalid product ID',
+//       });
+//     }
+
+ 
+//       const product = await Product.findOneAndDelete(
+//         { _id: productId, sellerId: userId },
+//       );
+// console.log(product);
+
+//       if (!product) {
+//         return res.status(404).json({
+//           success: false,
+//           message: 'Product not found or you are not authorized to delete it',
+//         });
+//       }
+
+//       const userUpdate = await User.updateOne(
+//         { _id: userId },
+//         { $pull: { totalCreateMyProducts: productId } },
+//       );
+
+//       if (userUpdate.modifiedCount === 0) {
+//         console.warn(`Product ID ${productId} not found in user's totalCreateMyProducts`);
+//       }
+
+
+//       return res.status(200).json({
+//         success: true,
+//         message: 'Product deleted successfully',
+//       });
+   
+    
+//   } catch (error) {
+//     console.error('Error deleting product:', {message: error.message});
+//     return res.status(500).json({
+//       success: false,
+//       message: 'Error deleting product',
+//       error: error.message,
+//     });
+//   }
+// };
+
 const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const { id: productID } = req.params;
+    const userID = req.user?.id;
 
+    const product = await Product.findOneAndDelete({
+      _id: productID,
+      sellerId: userID,
+    });
+    
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found or you are not authorized to delete it",
       });
     }
+    
+    const updateUser = await User.updateOne(
+      { _id: userID },
+      { $pull: { totalCreateMyProducts: productID } }
+    );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Product deleted successfully",
     });
 
   } catch (error) {
-    res.status(500).json({
+    console.error("Error deleting product:", error.message);
+    return res.status(500).json({
       success: false,
-      message: "Something went wrong",
+      message: "Internal server error",
       error: error.message,
     });
   }
 };
-
 const getProduct = async (req, res) => {
   try {
     const products = await Product.find();

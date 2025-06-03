@@ -5,15 +5,16 @@ import Product from '../adminModel/product.model.js'
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        require: true
+        required: true
     },
     email: {
         type: String,
-        require: true,
+        unique: true,
+        required: true
     },
     password: {
         type: String,
-        require: true
+        required: true
     },
     role: {
         type: String,
