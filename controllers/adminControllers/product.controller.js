@@ -98,57 +98,6 @@ const updateProduct = async (req, res) => {
   }
 };
 
-// const deleteProduct = async (req, res) => {
-//   try {
-//     const { id:productId } = req.params;
-//     const userId = req.user?._id;
-
-//     if (!mongoose.Types.ObjectId.isValid(productId)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: 'Invalid product ID',
-//       });
-//     }
-
- 
-//       const product = await Product.findOneAndDelete(
-//         { _id: productId, sellerId: userId },
-//       );
-// console.log(product);
-
-//       if (!product) {
-//         return res.status(404).json({
-//           success: false,
-//           message: 'Product not found or you are not authorized to delete it',
-//         });
-//       }
-
-//       const userUpdate = await User.updateOne(
-//         { _id: userId },
-//         { $pull: { totalCreateMyProducts: productId } },
-//       );
-
-//       if (userUpdate.modifiedCount === 0) {
-//         console.warn(`Product ID ${productId} not found in user's totalCreateMyProducts`);
-//       }
-
-
-//       return res.status(200).json({
-//         success: true,
-//         message: 'Product deleted successfully',
-//       });
-   
-    
-//   } catch (error) {
-//     console.error('Error deleting product:', {message: error.message});
-//     return res.status(500).json({
-//       success: false,
-//       message: 'Error deleting product',
-//       error: error.message,
-//     });
-//   }
-// };
-
 const deleteProduct = async (req, res) => {
   try {
     const { id: productID } = req.params;
