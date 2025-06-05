@@ -12,6 +12,26 @@ const createProduct = async (req, res) => {
     if (!name || !price || !description || !image || !category || !quantity) {
       return res.status(400).json({ message: "Please fill all the fields." })
     }
+
+    const allowedCategories = [
+      'Fruits & Vegetables',
+      'Dairy, Bread & Eggs',
+      'Snacks & Namkeen',
+      'Beverages',
+      'Staples',
+      'Personal Care',
+      'Home Cleaning',
+      'Baby Care',
+      'Pet Care',
+      'Frozen Food',
+      'Organic Products',
+      'Other'
+    ];
+
+    if (!allowedCategories.includes(category)) {
+      return res.status(400).json({ message: "Invalid category selected." });
+    }
+
     const user = await User.findById(id)
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -107,14 +127,14 @@ const deleteProduct = async (req, res) => {
       _id: productID,
       sellerId: userID,
     });
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found or you are not authorized to delete it",
       });
     }
-    
+
     const updateUser = await User.updateOne(
       { _id: userID },
       { $pull: { totalCreateMyProducts: productID } }

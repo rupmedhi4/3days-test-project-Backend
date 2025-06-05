@@ -20,7 +20,21 @@ const productSchema = mongoose.Schema({
     },
     category: {
         type: String,
-        required: true
+        required: true,
+        enum: [
+            'Fruits & Vegetables',
+            'Dairy, Bread & Eggs',
+            'Snacks & Namkeen',
+            'Beverages',
+            'Staples',
+            'Personal Care',
+            'Home Cleaning',
+            'Baby Care',
+            'Pet Care',
+            'Frozen Food',
+            'Organic Products',
+            'Other'
+        ]
     },
     quantity: {
         type: String,
