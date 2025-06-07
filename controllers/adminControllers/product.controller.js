@@ -163,6 +163,16 @@ const getProduct = async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+const getSingleProduct = async (req, res) => {
+  try {
+    const {id}=req.params
+    const products = await Product.findById(id);
+    res.status(200).json({ success: true, products });
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
 
 const getAdminCreateProducts = async (req, res) => {
   try {
@@ -176,4 +186,4 @@ const getAdminCreateProducts = async (req, res) => {
 }
 
 
-export { createProduct, updateProduct, deleteProduct, getProduct, getAdminCreateProducts }
+export { createProduct, updateProduct, deleteProduct, getProduct, getAdminCreateProducts,getSingleProduct }

@@ -13,6 +13,7 @@ import productRoute from './routes/adminRoute/product.route.js'
 //client route
 import clientUserRoute from './routes/clientRoutes/client.user.route.js'
 import orderRoute from './routes/clientRoutes/client.order.route.js'
+import Product from './model/adminModel/product.model.js';
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ app.use('/product',productRoute)
 app.use('/auth/client',clientUserRoute)
 app.use('/client/order',orderRoute)
 app.use('/client',orderRoute)
+
+
 
 
 
