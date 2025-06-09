@@ -19,7 +19,8 @@ const signup = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role:"client"
+            role:"client",
+            address:{}
         })
         await newUser.save()
 
@@ -54,6 +55,8 @@ const login = async (req, res) => {
         }
 
         createTokenAndSaveCookie(user, res)
+        console.log(user);
+        
         const { password: pwd, ...userWithoutPassword } = user.toObject()
 
         res.status(200).json({

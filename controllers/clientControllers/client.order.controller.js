@@ -195,16 +195,18 @@ const addToCart = async (req, res) => {
     }
 
     const user = await ClientUser.findById(userId);
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const isAlreadyInCart = user.addToCart
+      .map(id => id.toString())
+      .includes(productId.toString());
 
-    if (user.addToCart.includes(productId)) {
+    if (isAlreadyInCart) {
       return res.status(400).json({ message: "Product already in cart" });
     }
-    
+
     user.addToCart.push(productId);
     await user.save();
 
@@ -214,6 +216,7 @@ const addToCart = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 const getAddToCart = async (req, res) => {
   try {
@@ -225,7 +228,7 @@ const getAddToCart = async (req, res) => {
     }
 
     const data = user.addToCart; 
-    res.status(200).json({ message: "Cart data", data });
+    res.status(200).json({ message: "Cart data fetch successfully", data });
   } catch (error) {
     console.error("Error getting cart data:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -242,6 +245,8 @@ const deleteAddToCartItem = async (req, res) => {
       }, 
       { new: true } 
     );
+    const user = await ClientUser.findById(userId).populate("addToCart");
+    
 
     if (!updatedCart) {
       return res.status(404).json({ message: "User not found or unauthorized" });
@@ -249,7 +254,7 @@ const deleteAddToCartItem = async (req, res) => {
 
     res.status(200).json({
       message: "Product removed from cart successfully",
-      cart: updatedCart.addToCart
+      cart: user.addToCart
     });
 
   } catch (error) {

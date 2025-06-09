@@ -18,14 +18,17 @@ const clientUserSchema = mongoose.Schema({
     role: {
         type: String,
         enum: ['client', 'admin'],
-        
+
     },
     address: {
-        street: { type: String },
-        city: { type: String },
-        state: { type: String },
-        country: { type: String },
-        pincode: { type: String }
+        type: {
+            street: { type: String },
+            city: { type: String },
+            state: { type: String },
+            country: { type: String },
+            pincode: { type: String }
+        },
+        default: {} 
     },
     addToCart: [{
         type: mongoose.Schema.Types.ObjectId,
