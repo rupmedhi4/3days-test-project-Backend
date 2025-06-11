@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../adminModel/product.model.js";
 import User from '../adminModel/user.model.js'
+import ClientUser from './client.user.model.js';
 
 const orderSchema = new mongoose.Schema({
   productId: {
@@ -14,14 +15,29 @@ const orderSchema = new mongoose.Schema({
     default: 'pending',
     required: true
   },
-  orderedQuantity:{
-    type:Number,
+  orderedQuantity: {
+    type: Number,
     default: 1,
     required: true
   },
-  sellerId:{
+  sellerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
+    required: true
+  },
+  address: {
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    country: { type: String, required: true },
+    pincode: { type: String, required: true },
+    name: { type: String, required: true },
+    number: { type: Number, required: true },
+    _id: false
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ClientUser',
     required: true
   },
   createdAt: {

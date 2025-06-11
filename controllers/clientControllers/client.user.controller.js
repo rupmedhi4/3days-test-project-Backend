@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 
 
 const signup = async (req, res) => {
-    
+
     try {
         const { name, email, password } = req.body
 
@@ -19,8 +19,8 @@ const signup = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role:"client",
-            address:{}
+            role: "client",
+            address: {}
         })
         await newUser.save()
 
@@ -56,7 +56,7 @@ const login = async (req, res) => {
 
         createTokenAndSaveCookie(user, res)
         console.log(user);
-        
+
         const { password: pwd, ...userWithoutPassword } = user.toObject()
 
         res.status(200).json({
@@ -65,6 +65,22 @@ const login = async (req, res) => {
         });
     } catch (error) {
         res.status(500).send(`Error in login: something went wrong`);
+    }
+}
+
+const getUser = async (req, res) => {
+    try {
+        const id = req.user.id;
+        const user = await ClientUser.findById(id).populate("placedOrderItems");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "user data fetch successfully", user });
+    } catch (error) {
+        console.error("Error getting user data:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 
@@ -82,4 +98,4 @@ const logout = async (req, res) => {
 }
 
 
-export { signup, login, logout }
+export { signup, login, logout,getUser }

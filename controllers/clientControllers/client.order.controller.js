@@ -6,7 +6,7 @@ import Product from "../../model/adminModel/product.model.js";
 const placedOrder = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { sellerId, orderedQuantity } = req.body;
+    const { sellerId, orderedQuantity,address } = req.body;
     const clientId = req.user.id;
 
     if (!sellerId) {
@@ -32,7 +32,7 @@ const placedOrder = async (req, res) => {
       status: 'pending',
       orderedQuantity,
       sellerId,
-      address: clientUser.address
+      address
     });
 
     await order.save();
@@ -147,14 +147,7 @@ const orderUpdate = async (req, res) => {
 
 const addAddress = async (req, res) => {
   try {
-    const {
-      street,
-      city,
-      state,
-      country,
-      pincode
-    } = req.body;
-
+    const { street, city, state, country, pincode, name, number } = req.body;
     const id = req.user.id;
 
     const user = await ClientUser.findById(id);
@@ -162,18 +155,19 @@ const addAddress = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!street || !city || !state || !country || !pincode) {
-      return res.status(400).json({ message: "All address fields are required" });
-    }
 
 
-    user.address = {
+    user.address.push({
+     
       street,
       city,
       state,
       country,
-      pincode
-    };
+      pincode,
+      name,
+      number
+
+    });
 
     await user.save();
 
@@ -183,6 +177,7 @@ const addAddress = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 const addToCart = async (req, res) => {
   try {
