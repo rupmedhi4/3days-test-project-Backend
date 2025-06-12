@@ -1,12 +1,12 @@
 import express from 'express'
 import { signup,login, logout } from '../../controllers/adminControllers/user.controller.js'
-import { isAuthMiddleware, isLogin } from '../../middleware/secure.middleware.js'
+import { isAdminAuthMiddleware, isAdminLogin, isAuthMiddleware, isLogin } from '../../middleware/secure.middleware.js'
 const router = express.Router()
 
 
-router.post('/signup',isLogin,signup)
-router.post('/login',isLogin,login)
-router.post('/logout',isAuthMiddleware,logout)
+router.post('/signup',isAdminLogin,signup)
+router.post('/login',isAdminLogin,login)
+router.post('/logout',isAdminAuthMiddleware,logout)
 
 
 export default router

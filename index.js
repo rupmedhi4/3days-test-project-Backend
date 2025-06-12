@@ -13,6 +13,8 @@ import productRoute from './routes/adminRoute/product.route.js'
 //client route
 import clientUserRoute from './routes/clientRoutes/client.user.route.js'
 import orderRoute from './routes/clientRoutes/client.order.route.js'
+import cartRoute from './routes/clientRoutes/client.cart.route.js'
+import clientProductRoute from './routes/clientRoutes/client.product.route.js'
 import Product from './model/adminModel/product.model.js';
 
 dotenv.config();
@@ -21,8 +23,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-    "http://localhost:5173/",
-    "http://localhost:5174/",
+    "http://localhost:5173",
+    "http://localhost:5174",
 ];
 
 app.use(cors({
@@ -48,7 +50,8 @@ app.use('/product', productRoute)
 // Client Route
 app.use('/auth/client', clientUserRoute)
 app.use('/client/order', orderRoute)
-app.use('/client', orderRoute)
+app.use('/client/cart', cartRoute)
+app.use('/client/product', clientProductRoute)
 
 
 

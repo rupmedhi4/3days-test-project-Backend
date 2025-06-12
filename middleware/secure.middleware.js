@@ -25,6 +25,30 @@ const isAuthMiddleware = (req, res, next) => {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+const isAdminAuthMiddleware = (req, res, next) => {
+    try {
+        const token = req.cookies.adminJwt || req.headers['authorization']?.split(' ')[1];
+        console.log("middleweare token",token);
+        
+        if (!token) {
+            return res.status(401).json({ error: "No token, authorization denied" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_TOKEN);
+        if (!decoded) {
+            return res.status(401).json({ error: "Invalid Token" });
+        }
+
+        req.user = decoded;
+        
+
+        next();
+
+    } catch (error) {
+        console.error("Error in isAuthMiddleware:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 
 
 
@@ -45,7 +69,24 @@ const isLogin = (req, res, next) => {
     }
 };
 
+const isAdminLogin = (req, res, next) => {
+    try {
+        const token = req.cookies.adminJwt || req.headers['authorization']?.split(' ')[1];
+
+        if (token) {
+            const decoded = jwt.verify(token, process.env.JWT_TOKEN);
+            if (decoded) {
+                return res.status(400).json({ message: "User already logged in" });
+            }
+        }
+
+        next()
+    } catch (error) {
+        next()
+    }
+};
 
 
 
-export { isAuthMiddleware,isLogin }
+
+export { isAuthMiddleware,isLogin,isAdminAuthMiddleware,isAdminLogin }

@@ -1,3 +1,4 @@
+import { createAdminTokenAndSaveCookie } from '../../jwt/adminGenerateToken.js'
 import { createTokenAndSaveCookie } from '../../jwt/generateToken.js'
 import User from '../../model/adminModel/user.model.js'
 import bcrypt from 'bcryptjs'
@@ -22,7 +23,7 @@ const signup = async (req, res) => {
         })
         await newUser.save()
 
-        createTokenAndSaveCookie(newUser, res)
+        createAdminTokenAndSaveCookie(newUser, res)
 
         const { password: pwd, ...userWithoutPassword } = newUser.toObject();
 
@@ -52,7 +53,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
-        createTokenAndSaveCookie(user, res)
+        createAdminTokenAndSaveCookie(user, res)
         const { password: pwd, ...userWithoutPassword } = user.toObject()
 
         res.status(200).json({
@@ -66,7 +67,7 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie("jwt", {
+        res.clearCookie("adminJwt", {
             httpOnly: true,
             sameSite: "Lax",
             secure: false,
