@@ -13,7 +13,6 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'cancelled', 'shipped', 'delivered'],
     default: 'pending',
-    required: true
   },
   orderedQuantity: {
     type: Number,
@@ -39,6 +38,11 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ClientUser',
     required: true
+  },
+  paymentMode:{
+    type:String,
+    enum:['COD','Online'],
+    required:true
   },
   createdAt: {
     type: Date,

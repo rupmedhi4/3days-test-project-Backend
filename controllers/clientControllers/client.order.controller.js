@@ -6,7 +6,7 @@ import Product from "../../model/adminModel/product.model.js";
 const placedOrder = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { sellerId, orderedQuantity,address } = req.body;
+    const { orderedQuantity, sellerId,address,paymentMode } = req.body;
     const clientId = req.user.id;
 
     if (!sellerId) {
@@ -32,13 +32,15 @@ const placedOrder = async (req, res) => {
       status: 'pending',
       orderedQuantity,
       sellerId,
-      address
+      address,
+      userId:clientId,
+      paymentMode
     });
 
     await order.save();
 
-    sellerUser.placedOrderItems.push(order._id);
-    clientUser.placedOrderItems.push(order._id);
+    sellerUser.placedOrderItems.unshift(order._id);
+    clientUser.placedOrderItems.unshift(order._id);
 
     await sellerUser.save();
     await clientUser.save();

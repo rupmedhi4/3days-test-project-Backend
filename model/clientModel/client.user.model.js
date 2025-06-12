@@ -21,13 +21,13 @@ const clientUserSchema = mongoose.Schema({
 
     },
     address: [{
-        street: { type: String, required: true },
-        city: { type: String, required: true },
-        state: { type: String, required: true },
-        country: { type: String, required: true },
-        pincode: { type: String, required: true },
-        name: { type: String, required: true },
-        number: { type: Number, required: true }
+        street: { type: String },
+        city: { type: String},
+        state: { type: String},
+        country: { type: String},
+        pincode: { type: String},
+        name: { type: String},
+        number: { type: Number}
     }],
     addToCart: [{
         type: mongoose.Schema.Types.ObjectId,
