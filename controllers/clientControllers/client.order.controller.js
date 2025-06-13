@@ -6,7 +6,7 @@ import Product from "../../model/adminModel/product.model.js";
 const placedOrder = async (req, res) => {
   try {
     const productId = req.params.id;
-    const { orderedQuantity, sellerId,address,paymentMode } = req.body;
+    const { orderedQuantity, sellerId, address, paymentMode } = req.body;
     const clientId = req.user.id;
 
     if (!sellerId) {
@@ -19,6 +19,7 @@ const placedOrder = async (req, res) => {
     if (!sellerUser) {
       return res.status(404).json({ error: "Seller not found" });
     }
+
     if (!clientUser) {
       return res.status(404).json({ error: "Client user not found" });
     }
@@ -27,13 +28,33 @@ const placedOrder = async (req, res) => {
       return res.status(400).json({ error: "Client address is missing" });
     }
 
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    const availableQuantity = parseInt(product.quantity);
+    const requiredQuantity = parseInt(orderedQuantity);
+
+    if (availableQuantity <= 0) {
+      return res.status(400).json({ error: "Product is out of stock" });
+    }
+
+    if (requiredQuantity > availableQuantity) {
+      return res.status(400).json({ error: `Only ${availableQuantity} items left in stock` });
+    }
+
+    product.quantity = availableQuantity - requiredQuantity;
+    await product.save();
+
     const order = new Order({
       productId,
       status: 'pending',
       orderedQuantity,
       sellerId,
       address,
-      userId:clientId,
+      userId: clientId,
       paymentMode
     });
 
@@ -49,36 +70,26 @@ const placedOrder = async (req, res) => {
       message: "Order placed successfully",
       order,
     });
+
   } catch (error) {
     console.error("Error placing order:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-const getOrder = async (req, res) => {
-   try {
-    const id = req.user.id;
 
-    let user;
-    if (req.user.role === 'client') {
-      user = await ClientUser.findById(id).populate({
-        path: 'placedOrderItems',
-        populate: {
-          path: 'productId',
-          model: 'Product',
-        },
-      });
-    } else if (req.user.role === 'admin') {
-      user = await User.findById(id).populate({
-        path: 'placedOrderItems',
-        populate: {
-          path: 'productId',
-          model: 'Product',
-        },
-      });
-    } else {
-      return res.status(403).json({ message: 'Unauthorized role' });
-    }
+const getOrder = async (req, res) => {
+  try {
+    const id = req.user.id;
+    console.log(req.user);
+
+    const user = await ClientUser.findById(id).populate({
+      path: 'placedOrderItems',
+      populate: {
+        path: 'productId',
+        model: 'Product',
+      },
+    });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -125,7 +136,7 @@ const orderUpdate = async (req, res) => {
 
     const order = await Order.findById(id);
     console.log(order);
-    
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
@@ -160,7 +171,7 @@ const addAddress = async (req, res) => {
 
 
     user.address.push({
-     
+
       street,
       city,
       state,
@@ -224,7 +235,7 @@ const getAddToCart = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const data = user.addToCart; 
+    const data = user.addToCart;
     res.status(200).json({ message: "Cart data fetch successfully", data });
   } catch (error) {
     console.error("Error getting cart data:", error);
@@ -235,15 +246,15 @@ const getAddToCart = async (req, res) => {
 const deleteAddToCartItem = async (req, res) => {
   try {
     const productId = req.params.id;
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
-    const updatedCart = await ClientUser.findByIdAndUpdate(userId,{ 
-        $pull: { addToCart: productId } 
-      }, 
-      { new: true } 
+    const updatedCart = await ClientUser.findByIdAndUpdate(userId, {
+      $pull: { addToCart: productId }
+    },
+      { new: true }
     );
     const user = await ClientUser.findById(userId).populate("addToCart");
-    
+
 
     if (!updatedCart) {
       return res.status(404).json({ message: "User not found or unauthorized" });
@@ -262,7 +273,7 @@ const deleteAddToCartItem = async (req, res) => {
 
 
 
-export { placedOrder, getOrder, sellerGetOrder, orderUpdate,addAddress,addToCart,getAddToCart,deleteAddToCartItem };
+export { placedOrder, getOrder, sellerGetOrder, orderUpdate, addAddress, addToCart, getAddToCart, deleteAddToCartItem };
 
 
 

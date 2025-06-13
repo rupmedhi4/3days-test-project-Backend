@@ -185,5 +185,28 @@ const getAdminCreateProducts = async (req, res) => {
   }
 }
 
+const getOrderAll = async (req, res) => {
+  try {
+    const id = req.user.id;
+    console.log(req.user);
 
-export { createProduct, updateProduct, deleteProduct, getProduct, getAdminCreateProducts,getSingleProduct }
+    const user = await User.findById(id).populate({
+      path: 'placedOrderItems',
+      populate: {
+        path: 'productId',
+        model: 'Product',
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user.placedOrderItems);
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+export {getOrderAll, createProduct, updateProduct, deleteProduct, getProduct, getAdminCreateProducts,getSingleProduct }

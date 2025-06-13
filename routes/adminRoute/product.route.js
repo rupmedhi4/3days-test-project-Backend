@@ -1,5 +1,5 @@
 import express from 'express'
-import {createProduct, deleteProduct, getAdminCreateProducts, getProduct, getSingleProduct, updateProduct} from '../../controllers/adminControllers/product.controller.js'
+import {createProduct, deleteProduct, getAdminCreateProducts, getOrderAll, getProduct, getSingleProduct, updateProduct} from '../../controllers/adminControllers/product.controller.js'
 import { isAdminAuthMiddleware } from '../../middleware/secure.middleware.js'
 import { orderUpdate } from '../../controllers/clientControllers/client.order.controller.js'
 
@@ -13,6 +13,7 @@ router.get("/get",isAdminAuthMiddleware,getProduct)
 router.get("/get/my-products",isAdminAuthMiddleware,getAdminCreateProducts)
 router.get("/get/single/:id",isAdminAuthMiddleware,getSingleProduct)
 
+router.get('/all',isAdminAuthMiddleware,getOrderAll)
 router.put('/update/status/:id',isAdminAuthMiddleware,orderUpdate)
 
 
