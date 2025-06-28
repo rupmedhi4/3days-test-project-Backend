@@ -24,13 +24,14 @@ const signup = async (req, res) => {
         })
         await newUser.save()
 
-        createTokenAndSaveCookie(newUser, res)
+       const token = createTokenAndSaveCookie(newUser, res)
 
         const { password: pwd, ...userWithoutPassword } = newUser.toObject();
 
         res.status(200).json({
             message: "User created successfully",
             user: userWithoutPassword,
+            token
         });
 
     } catch (error) {
@@ -54,7 +55,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
-        createTokenAndSaveCookie(user, res)
+      const token =  createTokenAndSaveCookie(user, res)
         console.log(user);
 
         const { password: pwd, ...userWithoutPassword } = user.toObject()
@@ -62,6 +63,7 @@ const login = async (req, res) => {
         res.status(200).json({
             message: "User logged in successfully",
             user: userWithoutPassword,
+            token
         });
     } catch (error) {
         res.status(500).send(`Error in login: something went wrong`);
