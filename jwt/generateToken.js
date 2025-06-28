@@ -8,13 +8,13 @@ const createTokenAndSaveCookie = (user, res) => {
         {
             expiresIn: '14d'
         })
-
     res.cookie("jwt", token, {
-        httpOnly: false,
-        secure: false,
-        sameSite: "Lax",
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
         maxAge: 14 * 24 * 60 * 60 * 1000
-    })
+    });
+
     return token
 }
 
