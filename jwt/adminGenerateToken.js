@@ -9,7 +9,7 @@ const createAdminTokenAndSaveCookie = (user, res) => {
             expiresIn: '14d'
         })
 
-      res.cookie("jwt", token, {
+      res.cookie("adminjwt", token, {
         httpOnly: false,
         secure: true,
         sameSite: "None",
