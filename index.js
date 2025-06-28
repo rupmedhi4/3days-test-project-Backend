@@ -5,12 +5,11 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 
 import { db } from './db.js';
-//admin route
+
 import userRoute from './routes/adminRoute/user.route.js'
 import productRoute from './routes/adminRoute/product.route.js'
 
 
-//client route
 import clientUserRoute from './routes/clientRoutes/client.user.route.js'
 import orderRoute from './routes/clientRoutes/client.order.route.js'
 import cartRoute from './routes/clientRoutes/client.cart.route.js'
@@ -25,6 +24,8 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://client-grocery-app.vercel.app",
+    "https://admin-grocery-app.vercel.app"
 ];
 
 app.use(cors({
